@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "AWS SSO Auto Login Extension",
+  "version": "1.0",
+  "description": "Automatically login to specific websites",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/aws.webp",
+      "48": "images/aws.webp",
+      "128": "images/aws.webp"
+    }
+  }
+}
