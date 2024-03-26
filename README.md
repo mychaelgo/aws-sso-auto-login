@@ -1,6 +1,10 @@
 # AWS SSO Auto Login Browser Extension
 
-Extension to automatically click `Allow` on the AWS SSO Page.
+Extension to automatically click `Allow access` on the AWS SSO Page.
+
+This works with ASW SSO Mods made in 2024 and closes the tab.
+
+Delays are set to 1.5 seconds to allow time for pages to load and requests to get sent.
 
 ## Demo
 

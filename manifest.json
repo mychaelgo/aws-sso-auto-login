@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AWS SSO Auto Login Extension",
-  "version": "1.0",
-  "description": "Automatically login to specific websites",
+  "version": "1.0.4",
+  "description": "Automatically login to AWS SSO websites and close tab",
   "permissions": [
     "activeTab",
     "scripting",
