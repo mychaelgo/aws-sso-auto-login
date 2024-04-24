@@ -26,7 +26,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function checkAndLogin(tabId) {
     try {
         const currentURL = window.location.href;
-        console.log('Current URL:', currentURL);
         // Check if the current tab URL contains 'device.sso.*.awamazon.com'
         const isSSOPage = currentURL.includes('device.sso') && currentURL.includes('amazonaws.com');
         if (isSSOPage) {
@@ -57,7 +56,10 @@ function checkAndLogin(tabId) {
             const buttons = document.getElementsByTagName('button');
             for (let i = 0; i < buttons.length; i++) {
                 // If the button's text content is 'Allow access', click it
-                if (buttons[i].textContent === 'Allow access') {
+
+                const isAllowButton = buttons[i].textContent.toLowerCase().includes('allow access') || buttons[i].getAttribute('data-testid') === 'allow-access-button';
+
+                if (isAllowButton) {
                     buttons[i].click();
                     console.log('Clicked on Allow access button');
                     chrome.runtime.sendMessage({ action: 'closeTab', tabId: tabId });
@@ -65,12 +67,6 @@ function checkAndLogin(tabId) {
                 }
             }
         }
-        // console.log('No action required.');
-        // // list the ids of all buttons on the page
-        // const buttons = document.getElementsByTagName('button');
-        // for (let i = 0; i < buttons.length; i++) {
-        //     console.log('Button ID:', buttons[i].id);
-        // }
 
     } catch (error) {
         console.error('An error occurred:', error);
