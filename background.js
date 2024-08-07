@@ -4,6 +4,10 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+
+    // skip urls like "chrome://" to avoid extension error
+    if (tab.url?.startsWith('chrome://')) return undefined;
+
     if (changeInfo.status === 'complete') {
         setTimeout(() => {
             chrome.scripting.executeScript({
