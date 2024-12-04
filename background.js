@@ -27,9 +27,8 @@ async function checkAndLogin(tabId) {
     try {
         const currentURL = window.location.href;
         // Check if the current tab URL contains 'device.sso.*.awamazon.com'
-        const isSSOPage = currentURL.includes('device.sso') && currentURL.includes('amazonaws.com');
-        if (isSSOPage) {
-            const loginButton =  await waitForElement(() => document.getElementById('cli_verification_btn'));
+        if (isSSOPage(currentURL)) {
+            const loginButton = document.getElementById('cli_verification_btn');
             if (loginButton) {
                 // Click the 'cli_verification_btn'
                 loginButton.click();
@@ -37,9 +36,8 @@ async function checkAndLogin(tabId) {
             }
         }
         // Check if the current tab URL contains 'awsapps.com' and 'start'
-        const isUserConsentPage = currentURL.includes('awsapps.com') && currentURL.includes('start');
-        if (isUserConsentPage) {
-            const loginButtonAfterRedirection = await waitForElement(() => document.getElementById('cli_login_button'));
+        if (isUserConsentPage(currentURL)) {
+            const loginButtonAfterRedirection = document.getElementById('cli_login_button');
             // check if the 'cli_login_button' exists
             if (loginButtonAfterRedirection) {
                 // Click the 'cli_login_button'
@@ -50,10 +48,11 @@ async function checkAndLogin(tabId) {
         }
         // Check if the current tab URL contains 'awsapps.com' and 'start'
         // this function is used if the button id changes and will find the english text in the button to allow access
-        const isNewUserConsentPage = currentURL.includes('awsapps.com') && currentURL.includes('start');
-        if (isNewUserConsentPage) {
-            const allowButton = await waitForElement(() => {
-                const button = document.querySelector('button[data-testid="allow-access-button"]');
+        if (isNewUserConsentPage(currentURL)) {
+            // Get all buttons on the page
+            const buttons = document.getElementsByTagName('button');
+            for (let i = 0; i < buttons.length; i++) {
+                // If the button's text content is 'Allow access', click it
 
                 if (button?.textContent.toLowerCase().includes('allow access')) {
                     return button;
@@ -74,20 +73,16 @@ async function checkAndLogin(tabId) {
         console.error('An error occurred:', error);
     }
 
-    function wait(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+
+    function isSSOPage(url) {
+        return /^https:\/\/device\.sso\.[^.]*\.amazonaws\.com/.test(url);
     }
 
-    async function waitForElement(fn, timeout = 1500) {
-        const startTime = Date.now();
+    function isUserConsentPage(url) {
+        return /^https:\/\/[^.]+\.awsapps\.com\/start/.test(url);
+    }
 
-        do {
-            const result = fn();
-            if (result) {
-                return result;
-            }
-
-            await wait(100);
-        } while (Date.now() - startTime < timeout);
+    function isNewUserConsentPage(url) {
+        return isUserConsentPage(url);
     }
 }
