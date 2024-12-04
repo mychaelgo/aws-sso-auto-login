@@ -57,7 +57,7 @@ async function checkAndLogin(tabId) {
                 if (button?.textContent.toLowerCase().includes('allow access')) {
                     return button;
                 }
-            });
+            }
 
             if (allowButton) {
                 allowButton.click();
