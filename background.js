@@ -31,8 +31,7 @@ function checkAndLogin(tabId) {
     try {
         const currentURL = window.location.href;
         // Check if the current tab URL contains 'device.sso.*.awamazon.com'
-        const isSSOPage = currentURL.includes('device.sso') && currentURL.includes('amazonaws.com');
-        if (isSSOPage) {
+        if (isSSOPage(currentURL)) {
             const loginButton = document.getElementById('cli_verification_btn');
             if (loginButton) {
                 // Click the 'cli_verification_btn'
@@ -41,8 +40,7 @@ function checkAndLogin(tabId) {
             }
         }
         // Check if the current tab URL contains 'awsapps.com' and 'start'
-        const isUserConsentPage = currentURL.includes('awsapps.com') && currentURL.includes('start');
-        if (isUserConsentPage) {
+        if (isUserConsentPage(currentURL)) {
             const loginButtonAfterRedirection = document.getElementById('cli_login_button');
             // check if the 'cli_login_button' exists
             if (loginButtonAfterRedirection) {
@@ -54,8 +52,7 @@ function checkAndLogin(tabId) {
         }
         // Check if the current tab URL contains 'awsapps.com' and 'start'
         // this function is used if the button id changes and will find the english text in the button to allow access
-        const isNewUserConsentPage = currentURL.includes('awsapps.com') && currentURL.includes('start');
-        if (isNewUserConsentPage) {
+        if (isNewUserConsentPage(currentURL)) {
             // Get all buttons on the page
             const buttons = document.getElementsByTagName('button');
             for (let i = 0; i < buttons.length; i++) {
@@ -74,5 +71,18 @@ function checkAndLogin(tabId) {
 
     } catch (error) {
         console.error('An error occurred:', error);
+    }
+
+
+    function isSSOPage(url) {
+        return /^https:\/\/device\.sso\.[^.]*\.amazonaws\.com/.test(url);
+    }
+
+    function isUserConsentPage(url) {
+        return /^https:\/\/[^.]+\.awsapps\.com\/start/.test(url);
+    }
+
+    function isNewUserConsentPage(url) {
+        return isUserConsentPage(url);
     }
 }
