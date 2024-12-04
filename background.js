@@ -9,25 +9,21 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab.url?.startsWith('chrome://')) return undefined;
 
     if (changeInfo.status === 'complete') {
-        setTimeout(() => {
-            chrome.scripting.executeScript({
-                target: { tabId: tabId },
-                function: checkAndLogin,
-                args: [tabId]
-            });
-        }, 1500); // Delay of 1.5 seconds
+        chrome.scripting.executeScript({
+            target: { tabId: tabId },
+            function: checkAndLogin,
+            args: [tabId]
+        });
     }
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'closeTab') {
-        setTimeout(() => {
-            chrome.tabs.remove(message.tabId);
-        }, 1500); // Delay of 1.5 seconds
+        chrome.tabs.remove(message.tabId);
     }
 });
 
-function checkAndLogin(tabId) {
+async function checkAndLogin(tabId) {
     try {
         const currentURL = window.location.href;
         // Check if the current tab URL contains 'device.sso.*.awamazon.com'
@@ -58,14 +54,18 @@ function checkAndLogin(tabId) {
             for (let i = 0; i < buttons.length; i++) {
                 // If the button's text content is 'Allow access', click it
 
-                const isAllowButton = buttons[i].textContent.toLowerCase().includes('allow access') || buttons[i].getAttribute('data-testid') === 'allow-access-button';
-
-                if (isAllowButton) {
-                    buttons[i].click();
-                    console.log('Clicked on Allow access button');
-                    chrome.runtime.sendMessage({ action: 'closeTab', tabId: tabId });
-                    break;
+                if (button?.textContent.toLowerCase().includes('allow access')) {
+                    return button;
                 }
+            }
+
+            if (allowButton) {
+                allowButton.click();
+                console.log('Clicked on Allow access button');
+
+                await waitForElement(() => document.querySelector('.awsui-context-alert')?.textContent.toLocaleLowerCase().startsWith('request approved'));
+
+                chrome.runtime.sendMessage({ action: 'closeTab', tabId: tabId });
             }
         }
 
