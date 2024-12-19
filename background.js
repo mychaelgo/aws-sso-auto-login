@@ -52,7 +52,7 @@ async function checkAndLogin(tabId) {
             const allowButton = await waitForElement(() => {
                 const button = document.querySelector('button[data-testid="allow-access-button"]');
 
-                if (button?.textContent.toLowerCase().includes('allow access')) {
+                if (button?.textContent.toLowerCase().includes('allow')) {
                     return button;
                 }
             });
