@@ -26,17 +26,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 async function checkAndLogin(tabId) {
     try {
         const currentURL = window.location.href;
-        // Check if the current tab URL contains 'device.sso.*.awamazon.com'
-        if (isSSOPage(currentURL)) {
-            const loginButton =  await waitForElement(() => document.getElementById('cli_verification_btn'));
+        // Check if the current tab URL contains 'awsapps.com' and 'start' or 'device.sso.*.awamazon.com'
+        if (isUserConsentPage(currentURL) || isSSOPage(currentURL)) {
+             const loginButton =  await waitForElement(() => document.getElementById('cli_verification_btn'));
             if (loginButton) {
                 // Click the 'cli_verification_btn'
                 loginButton.click();
                 console.log('Clicked on cli_verification_btn');
             }
-        }
-        // Check if the current tab URL contains 'awsapps.com' and 'start'
-        if (isUserConsentPage(currentURL)) {
+
             const loginButtonAfterRedirection = await waitForElement(() => document.getElementById('cli_login_button'));
             // check if the 'cli_login_button' exists
             if (loginButtonAfterRedirection) {
